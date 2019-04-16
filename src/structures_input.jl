@@ -31,7 +31,7 @@ ProportionalMX(mx::mxT) where mxT <: Function = ProportionalMX{size(mx(0.), 1),m
 ProportionalMX(mx::mxT) where mxT <: SMatrix = ProportionalMX{size(mx, 1),mxT}(mx)
 ProportionalMX(mx::mxT) where mxT <: AbstractMatrix{<:Real} = ProportionalMX(SMatrix{size(mx)...}(mx))
 (PMX::ProportionalMX{d,<:Function})(t) where d = PMX.MX(t)
-(PMX::ProportionalMX{d,<:Matrix{<:Real}})(t) where d = PMX.MX
+(PMX::ProportionalMX{d,<:AbstractMatrix{<:Real}})(t) where d = PMX.MX
 Base.convert(::Type{ProportionalMX}, mx::mT) where mT <: AbstractMatrix{<:Real} = ProportionalMX(mx)
 
 struct DelayMX{d,dT,bT} <: CoefficientMatrix{d}
@@ -54,7 +54,7 @@ Additive(v::vT) where vT <: Function = Additive{length(v(0.)),vT}(v)
 Additive(v::vT) where vT <: SVector{d} where d = Additive{d,vT}(v)
 Additive(v::vT) where vT <: AbstractVector{<:Real} = Additive(SVector(v...))
 Additive(d::Integer) = Additive{d,Vector{Nothing}}(Vector{Nothing}(undef, d))
-(AV::Additive{d,<:Vector{<:Real}})(t) where d = AV.V
+(AV::Additive{d,<:AbstractVector{<:Real}})(t) where d = AV.V
 (AV::Additive{d,<:Function})(t) where d = AV.V(t)
 (AV::Additive{d,<:Array{<:Nothing}})(t) where d = zeros(d) # TODO check the effect on performance
 Base.convert(::Type{Additive}, v::vT) where vT <: AbstractVector{<:Real} = Additive(v)

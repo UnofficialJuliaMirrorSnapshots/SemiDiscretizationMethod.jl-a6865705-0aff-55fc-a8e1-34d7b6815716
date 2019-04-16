@@ -5,9 +5,9 @@ Julia package to investigate the behaviour of linear delay differential equation
 
 This package provides a tool to approximate the stability properties and stationary behaviour of linear periodic delay systems of the form:
 
-<!-- $$\dot{\mathbf{x}}(t) = \mathbf{A}(t) \mathbf{x}(t) + \sum_{j=1}^g \mathbf{B}(t) \mathbf{x}(t-\tau_j(t))+\mathbf{c}(t)$$ -->
+<!-- $$\dot{\mathbf{x}}(t) = \mathbf{A}(t) \mathbf{x}(t) + \sum_{j=1}^g \mathbf{B}_j(t) \mathbf{x}(t-\tau_j(t))+\mathbf{c}(t)$$ -->
 
-<img src="https://latex.codecogs.com/gif.latex?\dot{\mathbf{x}}(t)&space;=&space;\mathbf{A}(t)&space;\mathbf{x}(t)&space;&plus;&space;\sum_{j=1}^g&space;\mathbf{B}(t)&space;\mathbf{x}(t-\tau_j(t))&plus;\mathbf{c}(t)" title="\dot{\mathbf{x}}(t) = \mathbf{A}(t) \mathbf{x}(t) + \sum_{j=1}^g \mathbf{B}(t) \mathbf{x}(t-\tau_j(t))+\mathbf{c}(t)" />
+<img src="https://latex.codecogs.com/gif.latex?\dot{\mathbf{x}}(t)&space;=&space;\mathbf{A}(t)&space;\mathbf{x}(t)&space;&plus;&space;\sum_{j=1}^g&space;\mathbf{B}_j(t)&space;\mathbf{x}(t-\tau_j(t))&plus;\mathbf{c}(t)$" title="\dot{\mathbf{x}}(t) = \mathbf{A}(t) \mathbf{x}(t) + \sum_{j=1}^g \mathbf{B}_j(t) \mathbf{x}(t-\tau_j(t))+\mathbf{c}(t)$" />
 
 by transforming the underlying differential equation into the mapping:
 <!-- $$\mathbf{y}_{n+1} = \mathbf{F}_n\mathbf{y}_n+\mathbf{f}_n,$$ -->
@@ -77,6 +77,8 @@ year = {2011}
 }
 ```
 
+If you are interested in the behaviour of your linear delay model in the presence of Gaussian white noise, please consider the [StochasticSemiDiscretizationMethod.jl](https://github.com/HTSykora/StochasticSemiDiscretizationMethod.jl) package.
+
 # Usage with examples
 ## Installation
 ```julia
@@ -114,7 +116,7 @@ end
 hayes_lddep=createHayesProblem(-1.,-1.); # LDDE problem for Hayes equation
 method=SemiDiscretization(1,0.1) # 3rd order semi discretization with Δt=0.1
 τmax=1. # the largest τ of the system
-mapping=calculateMapping(hayes_lddep,method,τmax,n_steps=1,calculate_additive=true); #The discrete mapping of the system
+mapping=DiscreteMapping(hayes_lddep,method,τmax,n_steps=1,calculate_additive=true); #The discrete mapping of the system
 ```
 
 ```julia
@@ -136,7 +138,7 @@ using LaTeXStrings
 method=SemiDiscretization(4,0.1);
 τmax=1.
 
-foo(a,b) = log(spectralRadiusOfMapping(calculateMapping(createHayesProblem(a,b),method,τmax,
+foo(a,b) = log(spectralRadiusOfMapping(DiscreteMapping(createHayesProblem(a,b),method,τmax,
     n_steps=1))); # No additive term calculated
 
 axis=[Axis(-15.0:15.,:a),
@@ -181,7 +183,7 @@ P=2π #Principle period of the system (sin(t)=sin(t+P))
 mathieu_lddep=createMathieuProblem(3.,2.,-0.15,0.1,T=P); # LDDE problem for Hayes equation
 method=SemiDiscretization(1,0.01) # 3rd order semi discretization with Δt=0.1
 # if P = τmax, then n_steps is automatically calculated
-mapping=calculateMapping(mathieu_lddep,method,τmax,
+mapping=DiscreteMapping(mathieu_lddep,method,τmax,
     n_steps=Int((P+100eps(P))÷method.Δt),calculate_additive=true); #The discrete mapping of the system
 
 @show spectralRadiusOfMapping(mapping); # spectral radius ρ of the mapping matrix (ρ>1 unstable, ρ<1 stable)
@@ -206,7 +208,7 @@ a1=0.1;
 T=1π;
 method=SemiDiscretization(2,T/40);
 
-foo(δ,b0) = log(spectralRadiusOfMapping(calculateMapping(createMathieuProblem(δ,ε,b0,a1,T=T),method,τmax,
+foo(δ,b0) = log(spectralRadiusOfMapping(DiscreteMapping(createMathieuProblem(δ,ε,b0,a1,T=T),method,τmax,
     n_steps=Int((T+100eps(T))÷method.Δt)))); # No additive term calculated
 
 axis=[Axis(-1:0.2:5.,:δ),
